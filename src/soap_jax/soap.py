@@ -157,7 +157,7 @@ def scale_by_soap(
 
         # Project back
         norm_updates = jtu.tree_map(
-            lambda e_avg, e_avg_sq, q: project_back(e_avg / (jnp.sqrt(e_avg_sq)**adam_power + eps), q, precision),
+            lambda e_avg, e_avg_sq, q: project_back(e_avg / (jnp.sqrt(e_avg_sq) + eps)**adam_power, q, precision),
             exp_avg_projected,
             exp_avg_sq,
             state.Q,
