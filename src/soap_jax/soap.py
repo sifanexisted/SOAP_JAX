@@ -23,6 +23,7 @@ def soap(
     learning_rate: optax.ScalarOrSchedule = 3e-3,
     b1: float = 0.95,
     b2: float = 0.95,
+    adam_power: float = 1.0,
     shampoo_beta: float = -1,
     eps: float = 1e-8,
     weight_decay: float = 0.0,
@@ -54,6 +55,7 @@ def soap(
             b1=b1,
             b2=b2,
             shampoo_beta=shampoo_beta,
+            adam_power=adam_power,
             eps=eps,
             precondition_frequency=precondition_frequency,
             max_precond_dim=max_precond_dim,
@@ -67,6 +69,7 @@ def soap(
 def scale_by_soap(
     b1: float = 0.95,
     b2: float = 0.95,
+    adam_power: float = 1.0,
     shampoo_beta: float = -1,
     eps: float = 1e-8,
     precondition_frequency: int = 10,
@@ -154,7 +157,7 @@ def scale_by_soap(
 
         # Project back
         norm_updates = jtu.tree_map(
-            lambda e_avg, e_avg_sq, q: project_back(e_avg / (jnp.sqrt(e_avg_sq) + eps), q, precision),
+            lambda e_avg, e_avg_sq, q: project_back(e_avg / (jnp.sqrt(e_avg_sq)**adam_power + eps), q, precision),
             exp_avg_projected,
             exp_avg_sq,
             state.Q,
